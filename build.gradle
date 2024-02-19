@@ -19,11 +19,12 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
 	//web
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.projectlombok:lombok:1.18.22'
+	implementation 'org.projectlombok:lombok'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	//thymeleaf
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-
+	//security
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 
 	//h2
 	runtimeOnly 'com.h2database:h2' //http://localhost:8080/h2-console
