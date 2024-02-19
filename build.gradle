@@ -25,6 +25,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	//security
 	implementation 'org.springframework.boot:spring-boot-starter-security'
+	//jwt
+	implementation group: 'io.jsonwebtoken', name:'jjwt', version: '0.9.1'
+
 
 	//h2
 	runtimeOnly 'com.h2database:h2' //http://localhost:8080/h2-console
