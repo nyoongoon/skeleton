@@ -1,12 +1,10 @@
 package com.example.demo.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -20,6 +18,7 @@ public class TokenProvider {
     @Value("{spring.jwt.secret}")
     private String secretKey;
 
+    // 토큰 발급
     public String generateToken(String username, List<String> roles) {
         // 사용자의 권한정보를 저장하기 위한 클레임 생성
         Claims claims = Jwts.claims().setSubject(username);
@@ -30,7 +29,31 @@ public class TokenProvider {
                 .setClaims(claims)
                 .setIssuedAt(now) // 토큰 생성 시간
                 .setExpiration(expiredDate) // 토큰 만료 시간
-                .signWith(SignatureAlgorithm.HS512, secretKey) // 시그니처 알고리즘, 비밀키
+                .signWith(SignatureAlgorithm.HS512, this.secretKey) // 시그니처 알고리즘, 비밀키
                 .compact();
+    }
+
+    public String getUsername(String token){
+        return this.parseClaims(token).getSubject();
+    }
+
+    public boolean validateToken(String token){
+        if(!StringUtils.hasText(token)){
+            return false;
+        }
+
+        Claims claims = this.parseClaims(token);
+        return !claims.getExpiration().before(new Date());
+    }
+
+    // 토큰 유효성 체크
+    private Claims parseClaims(String token){
+        // 토큰 만료 경우 예외 발생
+        try{
+            return Jwts.parser().setSigningKey(this.secretKey).parseClaimsJws(token).getBody();
+        }catch (ExpiredJwtException e){
+            return e.getClaims();
+        }
+
     }
 }
