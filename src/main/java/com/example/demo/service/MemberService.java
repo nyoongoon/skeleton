@@ -31,8 +31,8 @@ public class MemberService implements UserDetailsService {
             throw new IllegalStateException("이미 사용 중인 아이디입니다.");
         }
         // 패스워드 암호화
-
-        return null;
+        signUp.setPassword(this.passwordEncoder.encode(signUp.getPassword()));
+        return this.memberRepository.save(signUp.toMemberEntity());
     }
 
     public Member authenticate(Auth.SignIn signIn) {
