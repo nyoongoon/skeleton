@@ -8,3 +8,12 @@ spring:
     username: sa
     password:
     driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+#    defer-datasource-initialization: true # 하이버네이트 초기화 전 쿼리 실행
+
+  # HS512 암호화 알고리즘 -> SecretKey는 64 byte 이상.
+  jwt:
+    secret:
