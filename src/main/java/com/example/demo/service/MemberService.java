@@ -25,6 +25,7 @@ public class MemberService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("에러 메시지 작성"));
     }
 
+    // 가입 -> Member 저장
     public Member register(Auth.SignUp signUp) {
         boolean exists = this.memberRepository.existsByUsername(signUp.getUsername());
         if (exists) {
@@ -35,8 +36,14 @@ public class MemberService implements UserDetailsService {
         return this.memberRepository.save(signUp.toMemberEntity());
     }
 
+    // 인증
     public Member authenticate(Auth.SignIn signIn) {
-
-        return null;
+        Member member = this.memberRepository.findByUsername(signIn.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디입니다."));
+        // 패스워드 인코딩 전후 동일 비교
+        if (!this.passwordEncoder.matches(member.getPassword(), member.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+        return member;
     }
 }
