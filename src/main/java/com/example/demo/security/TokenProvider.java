@@ -1,8 +1,15 @@
 package com.example.demo.security;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -14,7 +21,7 @@ import java.util.List;
 public class TokenProvider {
     private static final long TOKEN_EXPIRED_TIME = 1000 * 60 * 60; //밀리세컨드*초*분 == 1시간
     private static final String KEY_ROLES = "roles";
-
+    private final UserDetailsService userDetailsService;
     @Value("{spring.jwt.secret}")
     private String secretKey;
 
@@ -33,12 +40,20 @@ public class TokenProvider {
                 .compact();
     }
 
-    public String getUsername(String token){
+    // 권한 얻기
+    public Authentication getAuthentication(String jwt) {
+        UserDetails userDetails = this.userDetailsService.loadUserByUsername(this.getUsername(jwt));
+
+        //스프링에서 지원해주는 형태의 토큰 -> 사용자 정보, 사용자 권한 정보
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    }
+
+    public String getUsername(String token) {
         return this.parseClaims(token).getSubject();
     }
 
-    public boolean validateToken(String token){
-        if(!StringUtils.hasText(token)){
+    public boolean validateToken(String token) {
+        if (!StringUtils.hasText(token)) {
             return false;
         }
 
@@ -47,11 +62,11 @@ public class TokenProvider {
     }
 
     // 토큰 유효성 체크
-    private Claims parseClaims(String token){
+    private Claims parseClaims(String token) {
         // 토큰 만료 경우 예외 발생
-        try{
+        try {
             return Jwts.parser().setSigningKey(this.secretKey).parseClaimsJws(token).getBody();
-        }catch (ExpiredJwtException e){
+        } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
 
