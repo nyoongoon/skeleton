@@ -22,9 +22,9 @@ public class AuthController {
 
     // 회원가입
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody Auth.SignUp signUp) {
-        Member member = this.memberService.register(signUp);
-        return ResponseEntity.ok(member);
+    public ResponseEntity signup(@RequestBody Auth.SignUp signUp) {
+        this.memberService.register(signUp);
+        return ResponseEntity.ok().build();
     }
 
     // 인증 및 토큰 반환

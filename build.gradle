@@ -26,6 +26,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	//jwt
 	implementation group: 'io.jsonwebtoken', name:'jjwt', version: '0.9.1'
+	//jwt -> java11 이상 javax.xml.bind.DatatypeConverter 의존성 이슈
+	implementation 'javax.xml.bind:jaxb-api:2.3.0'
 
 	//lombok
 	compileOnly 'org.projectlombok:lombok'

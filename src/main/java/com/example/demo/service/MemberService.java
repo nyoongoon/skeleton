@@ -41,7 +41,7 @@ public class MemberService implements UserDetailsService {
         Member member = this.memberRepository.findByUsername(signIn.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디입니다."));
         // 패스워드 인코딩 전후 동일 비교
-        if (!this.passwordEncoder.matches(member.getPassword(), member.getPassword())) {
+        if (!this.passwordEncoder.matches(signIn.getPassword(), member.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
         return member;
