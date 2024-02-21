@@ -1,7 +1,8 @@
 package com.example.demo.controller;
 
-import com.example.demo.domain.Member;
-import com.example.demo.dto.auto.Auth;
+import com.example.demo.domain.auth.Member;
+import com.example.demo.dto.auto.AuthDto;
+import com.example.demo.dto.auto.TokenDto;
 import com.example.demo.security.TokenProvider;
 import com.example.demo.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -22,18 +23,18 @@ public class AuthController {
 
     // 회원가입
     @PostMapping("/signup")
-    public ResponseEntity signup(@RequestBody Auth.SignUp signUp) {
+    public ResponseEntity signup(@RequestBody AuthDto.SignUp signUp) {
         this.memberService.register(signUp);
         return ResponseEntity.ok().build();
     }
 
     // 인증 및 토큰 반환
     @PostMapping("/signin")
-    public ResponseEntity<?> signin(@RequestBody Auth.SignIn signIn) {
+    public ResponseEntity<TokenDto> signin(@RequestBody AuthDto.SignIn signIn) {
         // 패스워드 인증
         Member member = memberService.authenticate(signIn);
         // 토큰 생성
-        String token = this.tokenProvider.generateToken(member.getUsername(), member.getRoles());
-        return ResponseEntity.ok(token);
+        TokenDto tokenDto = this.tokenProvider.getTokenDto(member.getUsername(), member.getRoles());
+        return ResponseEntity.ok(tokenDto);
     }
 }

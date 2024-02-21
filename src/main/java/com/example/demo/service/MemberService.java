@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
-import com.example.demo.domain.Member;
-import com.example.demo.dto.auto.Auth;
+import com.example.demo.domain.auth.Member;
+import com.example.demo.dto.auto.AuthDto;
 import com.example.demo.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ public class MemberService implements UserDetailsService {
     }
 
     // 가입 -> Member 저장
-    public Member register(Auth.SignUp signUp) {
+    public Member register(AuthDto.SignUp signUp) {
         boolean exists = this.memberRepository.existsByUsername(signUp.getUsername());
         if (exists) {
             throw new IllegalStateException("이미 사용 중인 아이디입니다.");
@@ -37,7 +37,7 @@ public class MemberService implements UserDetailsService {
     }
 
     // 인증
-    public Member authenticate(Auth.SignIn signIn) {
+    public Member authenticate(AuthDto.SignIn signIn) {
         Member member = this.memberRepository.findByUsername(signIn.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디입니다."));
         // 패스워드 인코딩 전후 동일 비교

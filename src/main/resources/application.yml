@@ -17,12 +17,15 @@ spring:
   # HS512 암호화 알고리즘 -> SecretKey는 64 byte 이상.
   # 특정 문자열을 base64로 인코딩한 값을 사용.
   jwt:
-    secret: ZEtBQ2w3VnVWR1VVSVFzcGlWbGkK
+    access-secret-key: ZEtBQ2w3VnVWR1VVSVFzcGlWbGkK
+    refresh-secret-key: bVlweDhROVdIYkttNTl6V3hoMUgK
+
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher # antMatcher ->requestMatchers
-logging:
-  level:
-    root: trace
+
+#logging:
+#  level:
+#    root: trace
 
 

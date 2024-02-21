@@ -1,11 +1,11 @@
 package com.example.demo.dto.auto;
 
-import com.example.demo.domain.Member;
+import com.example.demo.domain.auth.Member;
 import lombok.Data;
 
 import java.util.List;
 
-public class Auth {
+public class AuthDto {
     @Data
     public static class SignIn {
         private String username;
