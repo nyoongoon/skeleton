@@ -1,6 +1,6 @@
-package com.example.demo.application.dto.auto;
+package com.example.demo.application.auth.dto;
 
-import com.example.demo.domain.entity.Member;
+import com.example.demo.domain.member.entity.Member;
 import lombok.Data;
 
 import java.util.List;

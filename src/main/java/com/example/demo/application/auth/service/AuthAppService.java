@@ -1,10 +1,10 @@
-package com.example.demo.application.service.auth;
+package com.example.demo.application.auth.service;
 
-import com.example.demo.application.dto.auto.AuthDto;
-import com.example.demo.application.dto.auto.TokenDto;
-import com.example.demo.configuration.token.TokenProvider;
-import com.example.demo.domain.entity.Member;
-import com.example.demo.domain.service.member.MemberDomainService;
+import com.example.demo.application.auth.dto.AuthDto;
+import com.example.demo.application.auth.dto.TokenDto;
+import com.example.demo.domain.token.service.TokenProvider;
+import com.example.demo.domain.member.entity.Member;
+import com.example.demo.domain.member.service.MemberDomainService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;

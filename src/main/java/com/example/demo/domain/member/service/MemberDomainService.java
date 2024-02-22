@@ -1,6 +1,6 @@
-package com.example.demo.domain.service.member;
+package com.example.demo.domain.member.service;
 
-import com.example.demo.domain.entity.Member;
+import com.example.demo.domain.member.entity.Member;
 
 import java.util.Optional;
 

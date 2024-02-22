@@ -1,4 +1,4 @@
-package com.example.demo.domain.entity;
+package com.example.demo.domain.token.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,7 +12,7 @@ import lombok.ToString;
 @Getter
 @NoArgsConstructor
 @ToString
-public class RefreshToken {
+public class Token {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,5 +21,5 @@ public class RefreshToken {
     private String username; //TODO 외래키?
 
 //    @Column(name = "REFRESH_TOKEN", nullable = false)
-    private String refreshToken;
+    private String tokenValue;
 }

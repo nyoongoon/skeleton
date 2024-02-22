@@ -1,8 +1,8 @@
-package com.example.demo.application.controller.auth;
+package com.example.demo.application.auth.controller;
 
-import com.example.demo.application.service.auth.AuthAppService;
-import com.example.demo.application.dto.auto.AuthDto;
-import com.example.demo.application.dto.auto.TokenDto;
+import com.example.demo.application.auth.service.AuthAppService;
+import com.example.demo.application.auth.dto.AuthDto;
+import com.example.demo.application.auth.dto.TokenDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

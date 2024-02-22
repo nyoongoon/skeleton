@@ -1,7 +1,7 @@
-package com.example.demo.configuration.token;
+package com.example.demo.domain.token.service;
 
-import com.example.demo.application.dto.auto.TokenDto;
-import com.example.demo.domain.entity.RefreshToken;
+import com.example.demo.application.auth.dto.TokenDto;
+import com.example.demo.domain.token.entity.Token;
 import io.jsonwebtoken.Claims;
 import org.springframework.security.core.Authentication;
 
@@ -18,5 +18,5 @@ public interface TokenProvider {
 
     boolean validateToken(String token, String secretKey);
 
-    String validateRefreshToken(RefreshToken entity);
+    String validateRefreshToken(Token entity);
 }

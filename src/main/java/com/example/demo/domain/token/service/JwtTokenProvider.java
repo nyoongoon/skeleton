@@ -1,7 +1,7 @@
-package com.example.demo.configuration.token;
+package com.example.demo.domain.token.service;
 
-import com.example.demo.application.dto.auto.TokenDto;
-import com.example.demo.domain.entity.RefreshToken;
+import com.example.demo.application.auth.dto.TokenDto;
+import com.example.demo.domain.token.entity.Token;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -80,8 +80,8 @@ public class JwtTokenProvider implements TokenProvider {
 
 
     @Override
-    public String validateRefreshToken(RefreshToken entity) { // refreshToken 검증하기 -> generateToken()메소드 사용
-        String refreshToken = entity.getRefreshToken();
+    public String validateRefreshToken(Token entity) { // refreshToken 검증하기 -> generateToken()메소드 사용
+        String refreshToken = entity.getTokenValue();
         if (!validateToken(refreshToken, this.refreshSecretKey)) {
             //refresh 토큰의 만료시간이 지나지 않았을 경우, 새로운 access 토큰을 생성합니다.
             Claims claims = this.parseClaims(refreshToken, this.refreshSecretKey);

@@ -1,6 +1,6 @@
 package com.example.demo.configuration;
 
-import com.example.demo.configuration.token.TokenProvider;
+import com.example.demo.domain.token.service.TokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
