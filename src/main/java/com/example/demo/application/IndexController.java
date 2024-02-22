@@ -1,4 +1,4 @@
-package com.example.demo.application.auth.controller;
+package com.example.demo.application;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;

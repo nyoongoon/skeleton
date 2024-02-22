@@ -1,7 +1,7 @@
-package com.example.demo.domain.token.service;
+package com.example.demo.utility.token;
 
 import com.example.demo.application.auth.dto.TokenDto;
-import com.example.demo.domain.token.entity.Token;
+import com.example.demo.domain.token.entity.RefreshToken;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -43,7 +43,19 @@ public class JwtTokenProvider implements TokenProvider {
         String accessToken = this.generateToken(claims, accessSecretKey, ACCESS_TOKEN_EXPIRED_TIME);
         String refreshToken = this.generateToken(claims, refreshSecretKey, REFRESH_TOKEN_EXPIRED_TIME);
 
-        return new TokenDto(accessToken, refreshToken);
+        return new TokenDto(username, accessToken, refreshToken);
+    }
+
+    @Override
+    public String getAccessToken(String username, List<String> roles) {
+        // 사용자의 권한정보를 저장하기 위한 클레임 생성
+        Claims claims = Jwts.claims().setSubject(username);
+        claims.put(KEY_ROLES, roles); // 클레임은 키밸류
+
+        //Access Token
+        String accessToken = this.generateToken(claims, accessSecretKey, ACCESS_TOKEN_EXPIRED_TIME);
+
+        return accessToken;
     }
 
     @Override
@@ -78,17 +90,26 @@ public class JwtTokenProvider implements TokenProvider {
         return !claims.getExpiration().before(new Date());
     }
 
+    @Override
+    public boolean validateAccessToken(String token){
+        return validateToken(token, this.accessSecretKey);
+    }
 
     @Override
-    public String validateRefreshToken(Token entity) { // refreshToken 검증하기 -> generateToken()메소드 사용
-        String refreshToken = entity.getTokenValue();
-        if (!validateToken(refreshToken, this.refreshSecretKey)) {
-            //refresh 토큰의 만료시간이 지나지 않았을 경우, 새로운 access 토큰을 생성합니다.
-            Claims claims = this.parseClaims(refreshToken, this.refreshSecretKey);
-            return generateToken(claims, accessSecretKey, ACCESS_TOKEN_EXPIRED_TIME);
-        }
-        return null;
+    public boolean validateRefreshToken(String token) {
+        return validateToken(token, this.refreshSecretKey);
     }
+
+//    @Override
+//    public String validateRefreshToken(RefreshToken entity) { // refreshToken 검증하기 -> generateToken()메소드 사용
+//        String refreshToken = entity.getTokenValue();
+//        if (validateToken(refreshToken, this.refreshSecretKey)) {
+//            //refresh 토큰의 만료시간이 지나지 않았을 경우, 새로운 access 토큰을 생성합니다.
+//            Claims claims = this.parseClaims(refreshToken, this.refreshSecretKey);
+//            return generateToken(claims, accessSecretKey, ACCESS_TOKEN_EXPIRED_TIME);
+//        }
+//        return null;
+//    }
 
     // 토큰 유효성 체크
     private Claims parseClaims(String token, String secretKey) {

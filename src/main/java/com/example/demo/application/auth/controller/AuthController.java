@@ -1,8 +1,8 @@
 package com.example.demo.application.auth.controller;
 
-import com.example.demo.application.auth.service.AuthAppService;
 import com.example.demo.application.auth.dto.AuthDto;
 import com.example.demo.application.auth.dto.TokenDto;
+import com.example.demo.application.auth.service.AuthAppService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -25,10 +25,19 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
-    // 인증 및 토큰 반환
+    // 인증 및 토큰 리턴
     @PostMapping("/signin")
     public ResponseEntity<TokenDto> signin(@RequestBody AuthDto.SignIn signIn) {
         TokenDto tokenDto = authAppService.signin(signIn);
+        return ResponseEntity.ok(tokenDto);
+    }
+
+
+    // 리프레시 토큰 검증
+    @PostMapping("/refresh")
+    public ResponseEntity<TokenDto> renewalAccessToken(@RequestBody String refreshToken) {
+        TokenDto tokenDto = authAppService.renewalAccessToken();
+
         return ResponseEntity.ok(tokenDto);
     }
 }

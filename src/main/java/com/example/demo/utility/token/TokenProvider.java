@@ -1,7 +1,7 @@
-package com.example.demo.domain.token.service;
+package com.example.demo.utility.token;
 
 import com.example.demo.application.auth.dto.TokenDto;
-import com.example.demo.domain.token.entity.Token;
+import com.example.demo.domain.token.entity.RefreshToken;
 import io.jsonwebtoken.Claims;
 import org.springframework.security.core.Authentication;
 
@@ -11,6 +11,8 @@ public interface TokenProvider {
     // 토큰 발급
     TokenDto getToken(String username, List<String> roles);
 
+    String getAccessToken(String username, List<String> roles);
+
     String generateToken(Claims claims, String secretKey, long expiredTime);
 
     // 권한 얻기
@@ -18,5 +20,7 @@ public interface TokenProvider {
 
     boolean validateToken(String token, String secretKey);
 
-    String validateRefreshToken(Token entity);
+    boolean validateAccessToken(String token);
+
+    boolean validateRefreshToken(String token);
 }
