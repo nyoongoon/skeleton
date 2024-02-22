@@ -1,11 +1,13 @@
-package com.example.demo.security;
+package com.example.demo.configuration;
 
+import com.example.demo.configuration.token.TokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -23,15 +25,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter { //OncePerReq
     public static final String TOKEN_HEADER = "Authorization";
     // 인증 타입 설정: jwt -> Bearer
     public static final String TOKEN_PREFIX = "Bearer ";
-
     private final TokenProvider tokenProvider;
+    @Value("{spring.jwt.access-secret-key}")
+    private String accessSecretKey;
+
 
     // 요청 -> filter -> servlet -> interceptor -> aop -> controller
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = this.resolveTokenFromRequest(request);
         // 토큰 유효성 검증
-        if(StringUtils.hasText(token) && this.tokenProvider.validateAccessToken(token)){
+        if (StringUtils.hasText(token) && this.tokenProvider.validateToken(token, accessSecretKey)) {
             Authentication auth = this.tokenProvider.getAuthentication(token); // 인증 정보 가져오기
             SecurityContextHolder.getContext().setAuthentication(auth); // 시큐리티 컨텍스트에 인증 정보 담기
         }

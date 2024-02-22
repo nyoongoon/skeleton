@@ -1,4 +1,4 @@
-package com.example.demo.domain.auth;
+package com.example.demo.domain.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,6 +23,7 @@ public class Member implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Unique
     private String username;
 
     private String password;
@@ -35,6 +36,12 @@ public class Member implements UserDetails {
         this.password = password;
         this.roles = roles;
     }
+
+
+    public void encryptPassword(){
+
+    }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
