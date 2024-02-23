@@ -10,7 +10,6 @@ import com.example.demo.exception.auth.TokenExpiredException;
 import com.example.demo.utility.token.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +17,10 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AuthAppService {
+    // Http 프로토콜에서 헤더에 포함 되는데, 어떤 key에 토큰을 줄건지 설정
+    public static final String TOKEN_HEADER = "Authorization";
+    // 인증 타입 설정: jwt -> Bearer
+    public static final String TOKEN_PREFIX = "Bearer ";
 
     private final TokenProvider tokenProvider;
     private final PasswordEncoder passwordEncoder;
@@ -63,9 +66,7 @@ public class AuthAppService {
         if (!isValidate) {
             throw new TokenExpiredException("토큰이 만료되었습니다.");
         }
-        Authentication auth = this.tokenProvider.getAuthentication(refreshToken); // 인증 정보 가져오기
-//        return this.tokenProvider.getAccessToken();
-        return null;
+        return this.tokenProvider.getAccessToken(refreshToken);
     }
 
 

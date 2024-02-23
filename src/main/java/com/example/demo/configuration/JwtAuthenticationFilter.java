@@ -1,5 +1,6 @@
 package com.example.demo.configuration;
 
+import com.example.demo.application.auth.service.AuthAppService;
 import com.example.demo.utility.token.TokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -21,12 +22,9 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter { //OncePerRequestFilter -> 한 요청당 한번 필터 실행..
-    // Http 프로토콜에서 헤더에 포함 되는데, 어떤 key에 토큰을 줄건지 설정
-    public static final String TOKEN_HEADER = "Authorization";
-    // 인증 타입 설정: jwt -> Bearer
-    public static final String TOKEN_PREFIX = "Bearer ";
-    private final TokenProvider tokenProvider;
 
+    private final TokenProvider tokenProvider;
+    private final AuthAppService authAppService; // header와 cookie 관련 로직은 authAppService로 옮기는게 맞지 않을까..?
 
     // 요청 -> filter -> servlet -> interceptor -> aop -> controller
     @Override

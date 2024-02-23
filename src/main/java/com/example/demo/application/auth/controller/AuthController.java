@@ -35,13 +35,16 @@ public class AuthController {
         refreshTokenCookie.setMaxAge(60 * 60 * 24 * 30); // 쿠키 유효 기간 설정 (예: 30일)
         response.addCookie(refreshTokenCookie);
 
+        response.addHeader(TOKEN_HEADER, TOKEN_PREFIX + tokenDto.getAccessToken());
+
         return ResponseEntity.ok(tokenDto.getAccessToken());
     }
 
 
     // 리프레시 토큰 검증
     @GetMapping("/refresh")
-    public ResponseEntity<String> renewalAccessToken(@CookieValue String refreshToken) {
+    public ResponseEntity<String> renewalAccessToken(@CookieValue String refreshToken,
+                                                     HttpServletResponse response) {
         String accessToken = authAppService.renewalAccessToken(refreshToken);
 
         return ResponseEntity.ok(accessToken);
