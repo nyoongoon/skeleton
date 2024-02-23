@@ -6,9 +6,11 @@ import com.example.demo.domain.member.entity.Member;
 import com.example.demo.domain.member.service.MemberDomainService;
 import com.example.demo.domain.token.entity.RefreshToken;
 import com.example.demo.domain.token.service.RefreshTokenDomainService;
+import com.example.demo.exception.auth.TokenExpiredException;
 import com.example.demo.utility.token.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -56,15 +58,15 @@ public class AuthAppService {
     }
 
 
-    public TokenDto renewalAccessToken(String refreshToken) {
+    public String renewalAccessToken(String refreshToken) {
         boolean isValidate = this.tokenProvider.validateRefreshToken(refreshToken);
         if (!isValidate) {
-            throw new IllegalStateException("");
+            throw new TokenExpiredException("토큰이 만료되었습니다.");
         }
-
-        this.tokenProvider.getAccessToken();
+        Authentication auth = this.tokenProvider.getAuthentication(refreshToken); // 인증 정보 가져오기
+//        return this.tokenProvider.getAccessToken();
+        return null;
     }
-
 
 
     public boolean isPasswordMatches(String originPassword, String encryptedPassword) {

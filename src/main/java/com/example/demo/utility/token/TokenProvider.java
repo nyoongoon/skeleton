@@ -11,7 +11,7 @@ public interface TokenProvider {
     // 토큰 발급
     TokenDto getToken(String username, List<String> roles);
 
-    String getAccessToken(String username, List<String> roles);
+    String getAccessToken(String refreshToken);
 
     String generateToken(Claims claims, String secretKey, long expiredTime);
 

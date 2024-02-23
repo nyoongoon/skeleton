@@ -3,13 +3,12 @@ package com.example.demo.application.auth.controller;
 import com.example.demo.application.auth.dto.AuthDto;
 import com.example.demo.application.auth.dto.TokenDto;
 import com.example.demo.application.auth.service.AuthAppService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -27,17 +26,24 @@ public class AuthController {
 
     // 인증 및 토큰 리턴
     @PostMapping("/signin")
-    public ResponseEntity<TokenDto> signin(@RequestBody AuthDto.SignIn signIn) {
+    public ResponseEntity<String> signin(@RequestBody AuthDto.SignIn signIn,
+                                         HttpServletResponse response) {
         TokenDto tokenDto = authAppService.signin(signIn);
-        return ResponseEntity.ok(tokenDto);
+
+        Cookie refreshTokenCookie = new Cookie("refreshToken", tokenDto.getRefreshToken());
+        refreshTokenCookie.setHttpOnly(true); // JavaScript에서 쿠키에 접근 불가능하도록 설정
+        refreshTokenCookie.setMaxAge(60 * 60 * 24 * 30); // 쿠키 유효 기간 설정 (예: 30일)
+        response.addCookie(refreshTokenCookie);
+
+        return ResponseEntity.ok(tokenDto.getAccessToken());
     }
 
 
     // 리프레시 토큰 검증
-    @PostMapping("/refresh")
-    public ResponseEntity<TokenDto> renewalAccessToken(@RequestBody String refreshToken) {
-        TokenDto tokenDto = authAppService.renewalAccessToken();
+    @GetMapping("/refresh")
+    public ResponseEntity<String> renewalAccessToken(@CookieValue String refreshToken) {
+        String accessToken = authAppService.renewalAccessToken(refreshToken);
 
-        return ResponseEntity.ok(tokenDto);
+        return ResponseEntity.ok(accessToken);
     }
 }

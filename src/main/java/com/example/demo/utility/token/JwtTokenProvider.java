@@ -1,7 +1,6 @@
 package com.example.demo.utility.token;
 
 import com.example.demo.application.auth.dto.TokenDto;
-import com.example.demo.domain.token.entity.RefreshToken;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -47,15 +46,11 @@ public class JwtTokenProvider implements TokenProvider {
     }
 
     @Override
-    public String getAccessToken(String username, List<String> roles) {
+    public String getAccessToken(String refreshToken) {
         // 사용자의 권한정보를 저장하기 위한 클레임 생성
-        Claims claims = Jwts.claims().setSubject(username);
-        claims.put(KEY_ROLES, roles); // 클레임은 키밸류
-
-        //Access Token
-        String accessToken = this.generateToken(claims, accessSecretKey, ACCESS_TOKEN_EXPIRED_TIME);
-
-        return accessToken;
+        Claims claims = this.parseClaims(refreshToken, refreshSecretKey);
+        // 엑세스 토큰 재발급
+        return this.generateToken(claims, accessSecretKey, ACCESS_TOKEN_EXPIRED_TIME);
     }
 
     @Override
@@ -91,7 +86,7 @@ public class JwtTokenProvider implements TokenProvider {
     }
 
     @Override
-    public boolean validateAccessToken(String token){
+    public boolean validateAccessToken(String token) {
         return validateToken(token, this.accessSecretKey);
     }
 
