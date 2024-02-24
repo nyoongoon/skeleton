@@ -8,25 +8,24 @@ import com.example.demo.domain.token.entity.RefreshToken;
 import com.example.demo.domain.token.service.RefreshTokenDomainService;
 import com.example.demo.exception.auth.TokenExpiredException;
 import com.example.demo.utility.token.TokenProvider;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthAppService {
-    // Http 프로토콜에서 헤더에 포함 되는데, 어떤 key에 토큰을 줄건지 설정
-    public static final String TOKEN_HEADER = "Authorization";
-    // 인증 타입 설정: jwt -> Bearer
-    public static final String TOKEN_PREFIX = "Bearer ";
 
     private final TokenProvider tokenProvider;
     private final PasswordEncoder passwordEncoder;
     private final MemberDomainService memberDomainService;
     private final RefreshTokenDomainService refreshTokenDomainService;
 
+    @Transactional
     public void signup(AuthDto.SignUp signUp) {
         // 존재여부 판단
         boolean isExists = memberDomainService.findByUsername(signUp.getUsername()).isPresent();
@@ -42,7 +41,8 @@ public class AuthAppService {
         memberDomainService.regist(member);
     }
 
-    public TokenDto signin(AuthDto.SignIn signIn) {
+    @Transactional
+    public TokenDto signin(AuthDto.SignIn signIn, HttpServletResponse response) {
         //멤버 조회
         Member member = this.memberDomainService.findByUsername(signIn.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디입니다."));
@@ -52,26 +52,32 @@ public class AuthAppService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
         // 토큰 Dto 생성
-        TokenDto tokenDto = this.tokenProvider.getToken(member.getUsername(), member.getRoles()); //여기서부터 보기..
+        TokenDto tokenDto = this.tokenProvider.getToken(member.getUsername(), member.getRoles());
         // 리프레시 토큰 엔티티 생성 및 신규 저장
         RefreshToken refreshToken = tokenDto.toRefreshTokenEntity();
         this.refreshTokenDomainService.renewalRefreshToken(refreshToken);
 
+        // 토큰 헤더, 쿠키에 저장
+        this.tokenProvider.addAccessTokenToHeader(response, tokenDto.getAccessToken());
+        this.tokenProvider.addRefreshTokenToCookie(response, tokenDto.getRefreshToken());
+
         return tokenDto;
     }
 
-
-    public String renewalAccessToken(String refreshToken) {
+    // 액세스 토큰 재발급 - 헤더에 삽입
+    public String renewalAccessToken(String refreshToken, HttpServletResponse response) {
         boolean isValidate = this.tokenProvider.validateRefreshToken(refreshToken);
         if (!isValidate) {
             throw new TokenExpiredException("토큰이 만료되었습니다.");
         }
-        return this.tokenProvider.getAccessToken(refreshToken);
+        String accessToken = this.tokenProvider.getAccessToken(refreshToken);
+
+        this.tokenProvider.addAccessTokenToHeader(response, accessToken);
+        return accessToken;
     }
 
 
     public boolean isPasswordMatches(String originPassword, String encryptedPassword) {
         return this.passwordEncoder.matches(originPassword, encryptedPassword);
     }
-
 }

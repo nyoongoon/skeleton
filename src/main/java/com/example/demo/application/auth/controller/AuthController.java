@@ -28,14 +28,9 @@ public class AuthController {
     @PostMapping("/signin")
     public ResponseEntity<String> signin(@RequestBody AuthDto.SignIn signIn,
                                          HttpServletResponse response) {
-        TokenDto tokenDto = authAppService.signin(signIn);
+        TokenDto tokenDto = authAppService.signin(signIn, response);
 
-        Cookie refreshTokenCookie = new Cookie("refreshToken", tokenDto.getRefreshToken());
-        refreshTokenCookie.setHttpOnly(true); // JavaScript에서 쿠키에 접근 불가능하도록 설정
-        refreshTokenCookie.setMaxAge(60 * 60 * 24 * 30); // 쿠키 유효 기간 설정 (예: 30일)
-        response.addCookie(refreshTokenCookie);
 
-        response.addHeader(TOKEN_HEADER, TOKEN_PREFIX + tokenDto.getAccessToken());
 
         return ResponseEntity.ok(tokenDto.getAccessToken());
     }
@@ -45,7 +40,7 @@ public class AuthController {
     @GetMapping("/refresh")
     public ResponseEntity<String> renewalAccessToken(@CookieValue String refreshToken,
                                                      HttpServletResponse response) {
-        String accessToken = authAppService.renewalAccessToken(refreshToken);
+        String accessToken = authAppService.renewalAccessToken(refreshToken, response);
 
         return ResponseEntity.ok(accessToken);
     }

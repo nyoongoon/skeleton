@@ -5,6 +5,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,7 +15,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.util.WebUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -20,6 +25,10 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class JwtTokenProvider implements TokenProvider {
+    // Http 프로토콜에서 헤더에 포함 되는데, 어떤 key에 토큰을 줄건지 설정
+    private static final String TOKEN_HEADER = "Authorization";
+    // 인증 타입 설정: jwt -> Bearer
+    private static final String TOKEN_PREFIX = "Bearer ";
     private static final long ACCESS_TOKEN_EXPIRED_TIME = 1000 * 60 * 30; //밀리세컨드*초*분* == 30분
     private static final long REFRESH_TOKEN_EXPIRED_TIME = 1000 * 60 * 60 * 24; //밀리세컨드*초*분*시 == 24시간
     private static final String KEY_ROLES = "roles";
@@ -114,5 +123,39 @@ public class JwtTokenProvider implements TokenProvider {
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
+    }
+
+
+    // 헤더에서 엑세스 토큰 얻기
+    public String resolveAccessToken(HttpServletRequest request) {
+        String accessToken = request.getHeader(TOKEN_HEADER);
+        if (!ObjectUtils.isEmpty(accessToken) && accessToken.startsWith(TOKEN_PREFIX)) {
+            return accessToken.substring(TOKEN_PREFIX.length());
+        }
+
+        return null;
+    }
+
+    // 쿠키에서 리프레시 토큰 얻기
+    public String resolveRefreshToken(HttpServletRequest request) {
+        Cookie refreshTokenCookie = WebUtils.getCookie(request, "refreshToken");
+        if (refreshTokenCookie != null) {
+            return refreshTokenCookie.getValue();
+        }
+        return null;
+    }
+
+    // 헤더에 엑세스 토큰 심기 //TODO
+    public void addAccessTokenToHeader(HttpServletResponse response, String accessToken) {
+        response.addHeader(TOKEN_HEADER, TOKEN_PREFIX + accessToken);
+    }
+
+    @Override
+    public void addRefreshTokenToCookie(HttpServletResponse response, String refreshToken) {
+        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+        refreshTokenCookie.setHttpOnly(true); // JavaScript에서 쿠키에 접근 불가능하도록 설정
+        refreshTokenCookie.setMaxAge(60 * 60 * 24 * 30); // 쿠키 유효 기간 설정 (예: 30일)
+        response.addCookie(refreshTokenCookie);
+//        response.addHeader(TOKEN_HEADER, TOKEN_PREFIX + refreshToken);
     }
 }

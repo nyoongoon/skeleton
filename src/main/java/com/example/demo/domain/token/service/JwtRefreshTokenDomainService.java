@@ -5,6 +5,7 @@ import com.example.demo.domain.token.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -14,6 +15,7 @@ public class JwtRefreshTokenDomainService implements RefreshTokenDomainService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
+    @Transactional
     public void renewalRefreshToken(RefreshToken refreshToken) {
         String username = refreshToken.getUsername();
         boolean isExists = refreshTokenRepository.findByUsername(username).isPresent();

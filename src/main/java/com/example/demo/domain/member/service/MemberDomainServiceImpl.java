@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -26,6 +27,7 @@ public class MemberDomainServiceImpl implements MemberDomainService, UserDetails
 
     // 가입 -> Member 저장
     @Override
+    @Transactional
     public void regist(Member member) {
         this.memberRepository.save(member);
     }

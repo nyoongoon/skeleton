@@ -3,6 +3,8 @@ package com.example.demo.utility.token;
 import com.example.demo.application.auth.dto.TokenDto;
 import com.example.demo.domain.token.entity.RefreshToken;
 import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
 
 import java.util.List;
@@ -23,4 +25,13 @@ public interface TokenProvider {
     boolean validateAccessToken(String token);
 
     boolean validateRefreshToken(String token);
+
+    void addAccessTokenToHeader(HttpServletResponse response, String accessToken);
+
+    void addRefreshTokenToCookie(HttpServletResponse response, String refreshToken);
+
+    String resolveAccessToken(HttpServletRequest request);
+
+    String resolveRefreshToken(HttpServletRequest request);
+
 }
