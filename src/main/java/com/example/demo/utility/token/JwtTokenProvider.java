@@ -1,6 +1,7 @@
 package com.example.demo.utility.token;
 
 import com.example.demo.application.auth.dto.TokenDto;
+import com.example.demo.domain.member.entity.Member;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -42,16 +43,20 @@ public class JwtTokenProvider implements TokenProvider {
 
     // 토큰 발급
     @Override
-    public TokenDto getToken(String username, List<String> roles) {
+    public TokenDto getTokens(Member member) {
         // 사용자의 권한정보를 저장하기 위한 클레임 생성
         Claims claims = Jwts.claims().setSubject(username);
         claims.put(KEY_ROLES, roles); // 클레임은 키밸류
 
         //Access Token & Refresh Token
-        String accessToken = this.generateToken(claims, accessSecretKey, ACCESS_TOKEN_EXPIRED_TIME);
-        String refreshToken = this.generateToken(claims, refreshSecretKey, REFRESH_TOKEN_EXPIRED_TIME);
+        String refreshToken = this.getRefreshSecretKey(claims);
+        String accessToken = this.getAccessToken(refreshToken);
 
         return new TokenDto(username, accessToken, refreshToken);
+    }
+
+    public String getRefreshSecretKey(Claims claims){
+        return this.generateToken(claims, this.refreshSecretKey, REFRESH_TOKEN_EXPIRED_TIME);
     }
 
     @Override
@@ -63,7 +68,7 @@ public class JwtTokenProvider implements TokenProvider {
     }
 
     @Override
-    public String generateToken(Claims claims, String secretKey, long expiredTime) {
+    private String generateToken(Claims claims, String secretKey, long expiredTime) {
         Date now = new Date();
         //jwt Token
         return Jwts.builder()
@@ -136,7 +141,7 @@ public class JwtTokenProvider implements TokenProvider {
         return null;
     }
 
-    // 쿠키에서 리프레시 토큰 얻기
+    // 쿠키에서 리프레시 토큰 얻기q
     public String resolveRefreshToken(HttpServletRequest request) {
         Cookie refreshTokenCookie = WebUtils.getCookie(request, "refreshToken");
         if (refreshTokenCookie != null) {

@@ -52,7 +52,7 @@ public class AuthAppService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
         // 토큰 Dto 생성
-        TokenDto tokenDto = this.tokenProvider.getToken(member.getUsername(), member.getRoles());
+        TokenDto tokenDto = this.tokenProvider.getTokens(member.getUsername(), member.getRoles());
         // 리프레시 토큰 엔티티 생성 및 신규 저장
         RefreshToken refreshToken = tokenDto.toRefreshTokenEntity();
         this.refreshTokenDomainService.renewalRefreshToken(refreshToken);

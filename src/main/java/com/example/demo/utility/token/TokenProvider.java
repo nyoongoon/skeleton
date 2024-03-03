@@ -1,7 +1,6 @@
 package com.example.demo.utility.token;
 
 import com.example.demo.application.auth.dto.TokenDto;
-import com.example.demo.domain.token.entity.RefreshToken;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,11 +10,13 @@ import java.util.List;
 
 public interface TokenProvider {
     // 토큰 발급
-    TokenDto getToken(String username, List<String> roles);
+    TokenDto getTokens(String username, List<String> roles);
+
+    String getRefreshSecretKey(Claims claims);
 
     String getAccessToken(String refreshToken);
 
-    String generateToken(Claims claims, String secretKey, long expiredTime);
+//    String generateToken(Claims claims, String secretKey, long expiredTime);
 
     // 권한 얻기
     Authentication getAuthentication(String jwt);
