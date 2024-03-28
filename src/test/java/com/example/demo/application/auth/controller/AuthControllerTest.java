@@ -58,7 +58,8 @@ class AuthControllerTest {
 
     @Test
     void 로그인_테스트() throws Exception {
-        memberDomainService.regist(this.signUp.toMemberEntity());
+        memberDomainService.regist(this.signUp.toMemberEntity()) // 이 로직이 잘못 됨 -> 비밀번호가 암호화 되서 저장 안됨!
+        Member member = memberDomainService.findMemberByUsername(this.signUp.getUsername());
 
         SignIn signin = SignIn.builder()
                 .username(this.signUp.getUsername())
@@ -70,8 +71,7 @@ class AuthControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andDo(MockMvcResultHandlers.print())
-
-        //TODO 헤더 에서 토큰 찾기..
+                .andExpect(MockMvcResultMatchers.content().string(""))
+                .andDo(MockMvcResultHandlers.print());
     }
 }
