@@ -1,5 +1,6 @@
 package com.example.demo.utility.token;
 
+import com.example.demo.application.auth.constants.Authority;
 import com.example.demo.application.auth.dto.TokenDto;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,7 +11,7 @@ import java.util.List;
 
 public interface TokenProvider {
     // 토큰 발급
-    TokenDto getTokens(String username, List<String> roles);
+    TokenDto getTokens(String username, List<Authority> roles);
 
     String getRefreshSecretKey(Claims claims);
 

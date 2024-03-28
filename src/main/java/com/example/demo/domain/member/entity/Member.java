@@ -1,5 +1,6 @@
 package com.example.demo.domain.member.entity;
 
+import com.example.demo.application.auth.constants.Authority;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,17 +29,17 @@ public class Member implements UserDetails {
 
     private String password;
 
-    private List<String> roles;
+    private List<Authority> roles;
 
     @Builder
-    public Member(String username, String password, List<String> roles) {
+    public Member(String username, String password, List<Authority> roles) {
         this.username = username;
         this.password = password;
         this.roles = roles;
     }
 
 
-    public void encryptPassword(){
+    public void encryptPassword() {
 
     }
 
@@ -46,7 +47,7 @@ public class Member implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.roles.stream()
-                .map(SimpleGrantedAuthority::new)
+                .map(e -> new SimpleGrantedAuthority(e.name()))
                 .collect(Collectors.toList());
     }
 

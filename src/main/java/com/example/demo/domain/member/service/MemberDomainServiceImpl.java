@@ -33,7 +33,14 @@ public class MemberDomainServiceImpl implements MemberDomainService, UserDetails
     }
 
     @Override
-    public Optional<Member> findByUsername(String username) {
-        return this.memberRepository.findByUsername(username);
+    public boolean isMemberExists(String username) {
+        Optional<Member> member = this.memberRepository.findByUsername(username);
+        return member.isPresent();
+    }
+
+    @Override
+    public Member findMemberByUsername(String username) {
+        return this.memberRepository.findByUsername(username)
+                .orElseThrow(()-> new IllegalStateException("존재하지 않는 아이디입니다."));
     }
 }

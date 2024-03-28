@@ -1,5 +1,6 @@
 package com.example.demo.utility.token;
 
+import com.example.demo.application.auth.constants.Authority;
 import com.example.demo.application.auth.dto.TokenDto;
 import com.example.demo.domain.member.entity.Member;
 import io.jsonwebtoken.Claims;
@@ -41,9 +42,29 @@ public class JwtTokenProvider implements TokenProvider {
     @Value("{spring.jwt.refresh-secret-key}")
     private String refreshSecretKey;
 
+
+    /**
+     * 토큰 생성
+     *
+     * @param claims
+     * @param secretKey
+     * @param expiredTime
+     * @return
+     */
+    private String generateToken(Claims claims, String secretKey, long expiredTime) {
+        Date now = new Date();
+        //jwt Token
+        return Jwts.builder()
+                .setClaims(claims) // 정보 저장
+                .setIssuedAt(now) // 토큰 발행 시간 정보
+                .setExpiration(new Date(now.getTime() + expiredTime)) // 토큰 만료 시간
+                .signWith(SignatureAlgorithm.HS256, secretKey)  // 시그니처 알고리즘, 비밀키
+                .compact();
+    }
+
     // 토큰 발급
     @Override
-    public TokenDto getTokens(Member member) {
+    public TokenDto getTokens(String username, List<Authority> roles) {
         // 사용자의 권한정보를 저장하기 위한 클레임 생성
         Claims claims = Jwts.claims().setSubject(username);
         claims.put(KEY_ROLES, roles); // 클레임은 키밸류
@@ -65,18 +86,6 @@ public class JwtTokenProvider implements TokenProvider {
         Claims claims = this.parseClaims(refreshToken, refreshSecretKey);
         // 엑세스 토큰 재발급
         return this.generateToken(claims, accessSecretKey, ACCESS_TOKEN_EXPIRED_TIME);
-    }
-
-    @Override
-    private String generateToken(Claims claims, String secretKey, long expiredTime) {
-        Date now = new Date();
-        //jwt Token
-        return Jwts.builder()
-                .setClaims(claims) // 정보 저장
-                .setIssuedAt(now) // 토큰 발행 시간 정보
-                .setExpiration(new Date(now.getTime() + expiredTime)) // 토큰 만료 시간
-                .signWith(SignatureAlgorithm.HS256, secretKey)  // 시그니처 알고리즘, 비밀키
-                .compact();
     }
 
     // 권한 얻기

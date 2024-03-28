@@ -1,22 +1,39 @@
 package com.example.demo.application.auth.dto;
 
+import com.example.demo.application.auth.constants.Authority;
 import com.example.demo.domain.member.entity.Member;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
 public class AuthDto {
-    @Data
+    @Getter
     public static class SignIn {
         private String username;
         private String password;
+
+        @Builder
+        public SignIn(String username, String password) {
+            this.username = username;
+            this.password = password;
+        }
     }
 
-    @Data
+    @Getter
+    @Setter
     public static class SignUp {
         private String username;
         private String password;
-        private List<String> roles;
+        private List<Authority> roles;
+
+        @Builder
+        public SignUp(String username, String password, List<Authority> roles) {
+            this.username = username;
+            this.password = password;
+            this.roles = roles;
+        }
 
         public Member toMemberEntity() {
             return Member.builder()

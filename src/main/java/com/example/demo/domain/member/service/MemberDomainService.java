@@ -6,5 +6,6 @@ import java.util.Optional;
 
 public interface MemberDomainService {
     void regist(Member member);
-    Optional<Member> findByUsername(String username);
+    boolean isMemberExists(String username);
+    Member findMemberByUsername(String username);
 }

@@ -28,7 +28,7 @@ public class AuthAppService {
     @Transactional
     public void signup(AuthDto.SignUp signUp) {
         // 존재여부 판단
-        boolean isExists = memberDomainService.findByUsername(signUp.getUsername()).isPresent();
+        boolean isExists = memberDomainService.isMemberExists(signUp.getUsername());
         if (isExists) {
             throw new IllegalStateException("이미 사용 중인 아이디입니다.");
         }
@@ -44,8 +44,7 @@ public class AuthAppService {
     @Transactional
     public TokenDto signin(AuthDto.SignIn signIn, HttpServletResponse response) {
         //멤버 조회
-        Member member = this.memberDomainService.findByUsername(signIn.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디입니다."));
+        Member member = this.memberDomainService.findMemberByUsername(signIn.getUsername());
         // 패스워드 일치 여부
         boolean isMatches = this.isPasswordMatches(signIn.getPassword(), member.getPassword());
         if (!isMatches) {
