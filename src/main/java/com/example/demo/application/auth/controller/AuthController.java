@@ -29,7 +29,6 @@ public class AuthController {
     public ResponseEntity<String> signin(@RequestBody AuthDto.SignIn signIn,
                                          HttpServletResponse response) {
         TokenDto tokenDto = authAppService.signin(signIn, response);
-        //TODO 쿠키는 응답에 담았을 경우 포스트맨 요청에 포함되는 이유? (헤더는 안됨)
         return ResponseEntity.ok(tokenDto.getAccessToken());
     }
 
